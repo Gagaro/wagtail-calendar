@@ -1,4 +1,5 @@
-# wagtail-calendar
+wagtail-calendar
+================
 
 A planning calendar for wagtail
 
