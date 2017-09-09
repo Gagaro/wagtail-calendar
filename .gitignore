@@ -1,0 +1,9 @@
+/.idea
+/venv
+*.pyc
+db.sqlite3
+*.sass-cache
+
+/gagawag/media
+/gagawag/static
+/gagawag/gagawag/settings/local.py
