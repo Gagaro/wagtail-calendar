@@ -1,0 +1,44 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "wagtail_calendar/fullcalendar/fullcalendar.min.css" %}" />
+  <style>
+    #planning-calendar {
+      width: 80%;
+      margin: auto;
+    }
+  </style>
+{% endblock %}
+
+{% block titletag %}{% trans 'Calendar' %}{% endblock %}
+
+{% block content %}
+  {% trans "Planning calendar" as title_trans %}
+  {% include "wagtailadmin/shared/header.html" with title=title_trans %}
+
+  <div id="planning-calendar"></div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script src="{% static "wagtail_calendar/moment/moment.min.js" %}"></script>
+  <script src="{% static "wagtail_calendar/fullcalendar/fullcalendar.min.js" %}"></script>
+  <script src="{% static "wagtail_calendar/fullcalendar/locale-all.js" %}"></script>
+
+  <script>
+  {% get_current_language as LANGUAGE_CODE %}
+  $(document).ready(function() {
+      $('#planning-calendar').fullCalendar({
+          locale: '{{ LANGUAGE_CODE }}',
+          header: {
+            left:   'title',
+            center: 'month agendaWeek agendaDay',
+            right:  'today prev,next'
+          },
+          events: '{% url 'wagtail_calendar:planning_calendar_events' %}'
+      });
+  });
+  </script>
+{% endblock %}
