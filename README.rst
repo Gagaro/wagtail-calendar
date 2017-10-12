@@ -9,8 +9,9 @@ THIS IS STILL A WORK IN PROGRESS
 TODO
 ----
 
-- [x] Display published pages
-- [x] Display planned pages
+- [X] Display published pages
+- [X] Display planned pages
+- [X] Use hook to get the events
 - [ ] Move planned pages to change the planning
 - [ ] Move unplanned pages from the side of the calendar to plan them
 - [ ] Add unit tests

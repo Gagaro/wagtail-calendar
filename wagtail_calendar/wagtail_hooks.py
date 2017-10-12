@@ -1,8 +1,10 @@
 from django.conf.urls import url, include
 from django.urls import reverse
+from django.utils.dateparse import parse_datetime
 from django.utils.translation import ugettext_lazy as _
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailcore import hooks
+from wagtail.wagtailcore.models import Page, PageRevision
 
 from wagtail_calendar import urls
 
@@ -22,3 +24,54 @@ def register_styleguide_menu_item():
         classnames='icon icon-date',
         order=1000
     )
+
+
+@hooks.register('wagtail_calendar_register_events')
+def register_published_events(request, start, end, events):
+    queryset = Page.objects.filter(first_published_at__isnull=False)
+    if start is not None:
+        queryset = queryset.filter(first_published_at__gte=start)
+    if end is not None:
+        queryset = queryset.filter(first_published_at__lte=end)
+    queryset = queryset.specific()
+    return events + [{
+        'id': page.pk,
+        'title': page.title,
+        'start': page.first_published_at.isoformat(),
+        'url': page.get_url(request),
+        'editable': False,
+        'color': '#333',
+    } for page in queryset]
+
+
+@hooks.register('wagtail_calendar_register_events')
+def register_planned_events(request, start, end, events):
+    # Only get the last revision of never published pages
+    queryset = (
+        PageRevision.objects
+            .filter(page__first_published_at__isnull=True)
+            .order_by('page', '-created_at')
+            .distinct('page')
+    )
+    if start is not None:
+        start = parse_datetime(start)
+    if end is not None:
+        end = parse_datetime(end)
+    pages = []
+    for page in queryset:
+        page = page.as_page_object()
+        if page.go_live_at is None:
+            continue
+        if start is not None and start > page.go_live_at:
+            continue
+        if end is not None and end < page.go_live_at:
+            continue
+        pages.append({
+            'id': page.pk,
+            'title': page.title,
+            'start': page.go_live_at.isoformat(),
+            'url': page.get_url(request),
+            'editable': True,
+            'color': '#e9b04d',
+        })
+    return events + pages
