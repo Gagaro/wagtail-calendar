@@ -41,6 +41,10 @@ def register_published_events(request, start, end, events):
         'url': page.get_url(request),
         'editable': False,
         'color': '#333',
+        'data': {
+            'type': 'page',
+            'pk': page.pk,
+        }
     } for page in queryset]
 
 
@@ -73,5 +77,9 @@ def register_planned_events(request, start, end, events):
             'url': page.get_url(request),
             'editable': True,
             'color': '#e9b04d',
+            'data': {
+                'type': 'page',
+                'pk': page.pk,
+            }
         })
     return events + pages

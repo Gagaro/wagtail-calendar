@@ -30,14 +30,28 @@
   <script>
   {% get_current_language as LANGUAGE_CODE %}
   $(document).ready(function() {
+      var locale = '{{ LANGUAGE_CODE }}'.substr(0, 2);
       $('#planning-calendar').fullCalendar({
-          locale: '{{ LANGUAGE_CODE }}',
+          locale: locale,
           header: {
             left:   'title',
             center: 'month agendaWeek agendaDay',
             right:  'today prev,next'
           },
-          events: '{% url 'wagtail_calendar:planning_calendar_events' %}'
+          events: '{% url 'wagtail_calendar:planning_calendar_events' %}',
+          eventDrop: function(event, delta, revertFunc) {
+              if (event.data.type === 'page' && event.data.pk !== undefined) {
+                  if (!event.start.hasTime()) {
+                      revertFunc();
+                  } else {
+                      var url = '{% url "wagtail_calendar:planning_calendar_plan_page" pk=0 %}'.replace(0, event.data.pk);
+                      $.post(url, {
+                          go_live_at: event.start.format().replace('T', ' '),  // Django default datetime validation...
+                          csrfmiddlewaretoken: '{{ csrf_token }}'
+                      });
+                  }
+              }
+          }
       });
   });
   </script>
