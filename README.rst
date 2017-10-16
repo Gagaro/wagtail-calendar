@@ -14,7 +14,8 @@ TODO
 - [X] Use hook to get the events
 - [ ] Add popup on click/hover
 - [X] Move planned pages to change the planning
-- [ ] Move unplanned pages from the side of the calendar to plan them
+- [X] Move unplanned pages from the side of the calendar to plan them
+- [ ] Move planned pages to the side of the calendar to unplan them
 - [ ] Get only page with permissions in wagtail_calendar_register_events hooks
 - [ ] Add unit tests
 - [ ] Docs

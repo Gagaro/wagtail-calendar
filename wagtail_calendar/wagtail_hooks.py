@@ -50,7 +50,7 @@ def register_published_events(request, start, end, events):
 
 @hooks.register('wagtail_calendar_register_events')
 def register_planned_events(request, start, end, events):
-    # Only get the last revision of never published pages
+    # Only get the last revision of never published and planned pages
     queryset = (
         PageRevision.objects
             .filter(page__first_published_at__isnull=True)
@@ -77,6 +77,35 @@ def register_planned_events(request, start, end, events):
             'url': page.get_url(request),
             'editable': True,
             'color': '#e9b04d',
+            'data': {
+                'type': 'page',
+                'pk': page.pk,
+            }
+        })
+    return events + pages
+
+
+@hooks.register('wagtail_calendar_register_side_events')
+def register_unplanned_events(request, events):
+    # Only get the last revision of never published and unplanned pages
+    queryset = (
+        PageRevision.objects
+            .filter(page__first_published_at__isnull=True)
+            .order_by('page', '-created_at')
+            .distinct('page')
+    )
+    pages = []
+    for page in queryset:
+        page = page.as_page_object()
+        if page.go_live_at is not None:
+            continue
+        pages.append({
+            'id': page.pk,
+            'title': page.title,
+            'url': page.get_url(request),
+            'editable': True,
+            'color': '#e9b04d',
+            'stick': True,
             'data': {
                 'type': 'page',
                 'pk': page.pk,

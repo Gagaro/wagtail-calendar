@@ -11,6 +11,17 @@ from wagtail.wagtailcore.models import Page
 class PlanningCalendarView(TemplateView):
     template_name = 'wagtail_calendar/planning_calendar.html'
 
+    def get_unplanned_events(self):
+        events = []
+        for hook in get_hooks('wagtail_calendar_register_side_events'):
+            events = hook(self.request, events)
+        return events
+
+    def get_context_data(self, **kwargs):
+        context = super(PlanningCalendarView, self).get_context_data(**kwargs)
+        context['unplanned_events'] = self.get_unplanned_events()
+        return context
+
 
 def planning_calendar_events(request):
     start = request.GET.get('start', None)

@@ -1,13 +1,23 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n static %}
+{% load i18n static wagtail_calendar_utils %}
 
 {% block extra_css %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static "wagtail_calendar/fullcalendar/fullcalendar.min.css" %}" />
   <style>
+    #calendar-content {
+      margin: 0 50px;
+      display: flex;
+      justify-content: space-between;
+    }
+
     #planning-calendar {
       width: 80%;
-      margin: auto;
+    }
+
+    .side-events {
+      margin: 5px 0;
+      cursor: pointer;
     }
   </style>
 {% endblock %}
@@ -18,7 +28,16 @@
   {% trans "Planning calendar" as title_trans %}
   {% include "wagtailadmin/shared/header.html" with title=title_trans %}
 
-  <div id="planning-calendar"></div>
+  <div id="calendar-content">
+    <div id="side-events" class="collapsible">
+      <h2>{% trans "Unplanned pages" %}</h2>
+      {% for event in unplanned_events %}
+        <div class="side-events fc-event" id="side-event-{{ event.id }}" data-event="{{ event|json }}">{{ event.title }}</div>
+      {% endfor %}
+    </div>
+
+    <div id="planning-calendar"></div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
@@ -30,6 +49,42 @@
   <script>
   {% get_current_language as LANGUAGE_CODE %}
   $(document).ready(function() {
+      // Initialize side events
+      $('.side-events').draggable({
+          zIndex: 999,
+          revert: true,
+          revertDuration: 0
+      });
+
+      var updateEvent = function(event) {
+          var url = '{% url "wagtail_calendar:planning_calendar_plan_page" pk=0 %}'.replace(0, event.data.pk);
+          $.post(url, {
+              go_live_at: event.start.format().replace('T', ' '),  // Django default datetime validation...
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+          });
+      };
+
+      var eventDrop = function(event, delta, revertFunc) {
+          if (event.data.type === 'page' && event.data.pk !== undefined) {
+              if (!event.start.hasTime()) {
+                  revertFunc();
+              } else {
+                  updateEvent(event);
+              }
+          }
+      };
+
+      var eventReceive = function(event) {
+          if (event.data.type === 'page' && event.data.pk !== undefined) {
+              if (!event.start.hasTime()) {
+                  $('#planning-calendar').fullCalendar('removeEvents', event.id);
+              } else {
+                  updateEvent(event);
+                  $('#side-event-'+ event.id).remove();
+              }
+          }
+      };
+
       var locale = '{{ LANGUAGE_CODE }}'.substr(0, 2);
       $('#planning-calendar').fullCalendar({
           locale: locale,
@@ -38,20 +93,10 @@
             center: 'month agendaWeek agendaDay',
             right:  'today prev,next'
           },
+          droppable: true,
           events: '{% url 'wagtail_calendar:planning_calendar_events' %}',
-          eventDrop: function(event, delta, revertFunc) {
-              if (event.data.type === 'page' && event.data.pk !== undefined) {
-                  if (!event.start.hasTime()) {
-                      revertFunc();
-                  } else {
-                      var url = '{% url "wagtail_calendar:planning_calendar_plan_page" pk=0 %}'.replace(0, event.data.pk);
-                      $.post(url, {
-                          go_live_at: event.start.format().replace('T', ' '),  // Django default datetime validation...
-                          csrfmiddlewaretoken: '{{ csrf_token }}'
-                      });
-                  }
-              }
-          }
+          eventDrop: eventDrop,
+          eventReceive: eventReceive
       });
   });
   </script>
