@@ -20,3 +20,16 @@ TODO
 - [ ] Add unit tests
 - [ ] Docs
 - [ ] Release!
+
+Screenshots
+-----------
+
+Keep in mind those comes from a development version.
+
+The unplanned pages are accessible on the left.
+
+.. image:: screenshots/calendar.png
+
+You can drag and drop them to plan them.
+
+.. image:: screenshots/planning.png
