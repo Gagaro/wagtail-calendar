@@ -1,0 +1,26 @@
+#calendar-content {
+  margin: 0 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#planning-calendar {
+  width: 80%;
+}
+
+#side-events {
+    height: 100%;
+}
+
+#side-events-dropzone {
+    background-color: #ddd;
+    border-radius: 15px;
+    padding: 10px;
+    height: 100%;
+    box-shadow: 5px 5px 10px #aaa;
+}
+
+.side-events {
+  margin: 5px 0;
+  cursor: pointer;
+}
