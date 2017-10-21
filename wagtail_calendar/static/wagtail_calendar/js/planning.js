@@ -15,8 +15,9 @@ $(document).ready(function() {
 
   var updateEvent = function(event) {
       var url = update_url.replace(0, event.data.pk);
+
       $.post(url, {
-          go_live_at: event.start.format().replace('T', ' '),  // Django default datetime validation...
+          go_live_at: event.start ? event.start.format().replace('T', ' ') : null,  // Django default datetime validation...
           csrfmiddlewaretoken: csrf_token
       });
   };
@@ -44,6 +45,34 @@ $(document).ready(function() {
       }
   };
 
+  var isEventOverDropzone = function(x, y) {
+      var external_events = $('#side-events-dropzone');
+      var offset = external_events.offset();
+      offset.right = external_events.width() + offset.left;
+      offset.bottom = external_events.height() + offset.top;
+
+      // Compare
+      return x >= offset.left
+          && y >= offset.top
+          && x <= offset.right
+          && y <= offset.bottom;
+  };
+
+  var eventDragStop = function(event, jsEvent, ui, view) {
+      if (isEventOverDropzone(jsEvent.clientX, jsEvent.clientY)) {
+          $planning_calendar.fullCalendar('removeEvents', event.id);
+          var el = $("<div class='side-events fc-event' id='side-event-"+ event.id +"'>").appendTo('#side-events-dropzone').text(event.title);
+          el.draggable({
+              zIndex: 999,
+              revert: true,
+              revertDuration: 0
+          });
+          el.data('event', event);
+          event.start = null;
+          updateEvent(event);
+      }
+  };
+
   $planning_calendar.fullCalendar({
       locale: locale,
       header: {
@@ -52,8 +81,10 @@ $(document).ready(function() {
         right:  'today prev,next'
       },
       droppable: true,
+      dragRevertDuration: 0,
       events: events_url,
       eventDrop: eventDrop,
-      eventReceive: eventReceive
+      eventReceive: eventReceive,
+      eventDragStop: eventDragStop
   });
 });
