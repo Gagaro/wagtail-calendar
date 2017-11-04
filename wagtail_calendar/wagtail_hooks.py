@@ -4,7 +4,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.translation import ugettext_lazy as _
 from wagtail.wagtailadmin.menu import MenuItem
 from wagtail.wagtailcore import hooks
-from wagtail.wagtailcore.models import Page, PageRevision
+from wagtail.wagtailcore.models import Page, PageRevision, UserPagePermissionsProxy
 
 from wagtail_calendar import urls
 
@@ -28,28 +28,33 @@ def register_styleguide_menu_item():
 
 @hooks.register('wagtail_calendar_register_events')
 def register_published_events(request, start, end, events):
+    permissions = UserPagePermissionsProxy(request.user)
     queryset = Page.objects.filter(first_published_at__isnull=False)
     if start is not None:
         queryset = queryset.filter(first_published_at__gte=start)
     if end is not None:
         queryset = queryset.filter(first_published_at__lte=end)
     queryset = queryset.specific()
-    return events + [{
-        'id': page.pk,
-        'title': page.title,
-        'start': page.first_published_at.isoformat(),
-        'url': page.get_url(request),
-        'editable': False,
-        'color': '#333',
-        'data': {
-            'type': 'page',
-            'pk': page.pk,
+    return events + [
+        {
+            'id': page.pk,
+            'title': page.title,
+            'start': page.first_published_at.isoformat(),
+            'url': page.get_url(request),
+            'editable': permissions.for_page(page).can_unpublish(),
+            'color': '#333',
+            'data': {
+                'type': 'page',
+                'pk': page.pk,
+            }
         }
-    } for page in queryset]
+        for page in queryset
+    ]
 
 
 @hooks.register('wagtail_calendar_register_events')
 def register_planned_events(request, start, end, events):
+    permissions = UserPagePermissionsProxy(request.user)
     # Only get the last revision of never published and planned pages
     queryset = (
         PageRevision.objects
@@ -75,7 +80,7 @@ def register_planned_events(request, start, end, events):
             'title': page.title,
             'start': page.go_live_at.isoformat(),
             'url': page.get_url(request),
-            'editable': True,
+            'editable': permissions.for_page(page).can_publish(),
             'color': '#e9b04d',
             'data': {
                 'type': 'page',
@@ -87,6 +92,7 @@ def register_planned_events(request, start, end, events):
 
 @hooks.register('wagtail_calendar_register_side_events')
 def register_unplanned_events(request, events):
+    permissions = UserPagePermissionsProxy(request.user)
     # Only get the last revision of never published and unplanned pages
     queryset = (
         PageRevision.objects
@@ -103,7 +109,7 @@ def register_unplanned_events(request, events):
             'id': page.pk,
             'title': page.title,
             'url': page.get_url(request),
-            'editable': True,
+            'editable': permissions.for_page(page).can_publish(),
             'color': '#e9b04d',
             'stick': True,
             'data': {

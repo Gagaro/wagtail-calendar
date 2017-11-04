@@ -20,7 +20,7 @@
       <div id="side-events-dropzone">
       {% block unplanned_events %}
         {% for event in unplanned_events %}
-          <div class="side-events fc-event" id="side-event-{{ event.id }}" data-event="{{ event|json }}">{{ event.title }}</div>
+          <div class="side-events fc-event{% if event.editable %} side-event-draggable{% endif %}" id="side-event-{{ event.id }}" data-event="{{ event|json }}">{{ event.title }}</div>
         {% endfor %}
       {% endblock %}
       </div>

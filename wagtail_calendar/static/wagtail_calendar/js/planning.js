@@ -7,7 +7,7 @@ $(document).ready(function() {
     var csrf_token = $planning_calendar.attr('data-csrf');
 
   // Initialize side events
-  $('.side-events').draggable({
+  $('.side-event-draggable').draggable({
       zIndex: 999,
       revert: true,
       revertDuration: 0
