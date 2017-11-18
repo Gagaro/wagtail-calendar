@@ -7,6 +7,7 @@ from wagtail.wagtailcore import hooks
 from wagtail.wagtailcore.models import Page, PageRevision, UserPagePermissionsProxy
 
 from wagtail_calendar import urls
+from wagtail_calendar.utils import get_page_event_data
 
 
 @hooks.register('register_admin_urls')
@@ -43,10 +44,7 @@ def register_published_events(request, start, end, events):
             'url': page.get_url(request),
             'editable': permissions.for_page(page).can_unpublish(),
             'color': '#333',
-            'data': {
-                'type': 'page',
-                'pk': page.pk,
-            }
+            'data': get_page_event_data(page),
         }
         for page in queryset
     ]
@@ -82,10 +80,7 @@ def register_planned_events(request, start, end, events):
             'url': page.get_url(request),
             'editable': permissions.for_page(page).can_publish(),
             'color': '#e9b04d',
-            'data': {
-                'type': 'page',
-                'pk': page.pk,
-            }
+            'data': get_page_event_data(page),
         })
     return events + pages
 
@@ -112,9 +107,6 @@ def register_unplanned_events(request, events):
             'editable': permissions.for_page(page).can_publish(),
             'color': '#e9b04d',
             'stick': True,
-            'data': {
-                'type': 'page',
-                'pk': page.pk,
-            }
+            'data': get_page_event_data(page),
         })
     return events + pages

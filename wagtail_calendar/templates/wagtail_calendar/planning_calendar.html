@@ -29,12 +29,21 @@
     {% get_current_language as LANGUAGE_CODE %}
     {% block planning_calendar %}
       <div id="planning-calendar"
-           data-locale="LANGUAGE_CODE"
+           data-locale="{{ LANGUAGE_CODE }}"
            data-update-url="{% url "wagtail_calendar:planning_calendar_plan_page" pk=0 %}"
            data-events-url="{% url 'wagtail_calendar:planning_calendar_events' %}"
            data-csrf="{{ csrf_token }}"></div>
     {% endblock %}
   </div>
+
+  {% block event_popup %}
+  <div id="event-popup" style="display: none">
+    <a id="event-popup-close" href="#" class="icon icon-cross"></a>
+    <div id="event-title"></div>
+    <div id="event-author"></div>
+    <div id="event-description"></div>
+  </div>
+  {% endblock %}
 {% endblock %}
 
 {% block extra_js %}

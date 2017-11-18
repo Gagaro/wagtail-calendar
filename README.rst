@@ -12,7 +12,7 @@ TODO
 - [X] Display published pages
 - [X] Display planned pages
 - [X] Use hook to get the events
-- [ ] Add popup on click/hover
+- [X] Add popup on click/hover
 - [X] Move planned pages to change the planning
 - [X] Move unplanned pages from the side of the calendar to plan them
 - [X] Move planned pages to the side of the calendar to unplan them

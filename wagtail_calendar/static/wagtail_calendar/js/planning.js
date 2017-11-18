@@ -73,6 +73,27 @@ $(document).ready(function() {
       }
   };
 
+  var $popup = $('div#event-popup');
+  var eventClick = function(event, jsEvent, view) {
+      var $event = $(this);
+      var $titleLink = $('<a>', {text: event.title, href: event.url});
+      $popup.find('#event-title').html('').append($titleLink);
+      $popup.find('#event-author').text(event.data.author);
+      $popup.find('#event-description').html(event.data.description);
+      $popup.show();
+      // Position need to be calculated when the popup is visible
+      $popupParent = $popup.offsetParent();
+      var top = $event.offset().top - $popupParent.offset().top + $event.height();
+      var left = $event.offset().left - $popupParent.offset().left;
+      $popup.css({top: top, left: left});
+      return false;
+  };
+
+  $popup.find('#event-popup-close').click(function(event) {
+      event.preventDefault();
+      $popup.hide();
+  });
+
   $planning_calendar.fullCalendar({
       locale: locale,
       header: {
@@ -85,6 +106,7 @@ $(document).ready(function() {
       events: events_url,
       eventDrop: eventDrop,
       eventReceive: eventReceive,
-      eventDragStop: eventDragStop
+      eventDragStop: eventDragStop,
+      eventClick: eventClick
   });
 });
