@@ -56,15 +56,16 @@ def register_planned_events(request, start, end, events):
     # Only get the last revision of never published and planned pages
     queryset = (
         PageRevision.objects
-            .filter(page__first_published_at__isnull=True)
-            .order_by('page', '-created_at')
-            .distinct('page')
+        .filter(page__first_published_at__isnull=True)
+        .order_by('page', '-created_at')
+        # .distinct('page')  # Doesn't work with sqlite
     )
     if start is not None:
         start = parse_datetime(start)
     if end is not None:
         end = parse_datetime(end)
     pages = []
+    ids = set()
     for page in queryset:
         page = page.as_page_object()
         if page.go_live_at is None:
@@ -73,6 +74,9 @@ def register_planned_events(request, start, end, events):
             continue
         if end is not None and end < page.go_live_at:
             continue
+        if page.pk in ids:
+            continue  # Avoid duplicated event
+        ids.add(page.pk)
         pages.append({
             'id': page.pk,
             'title': page.title,
@@ -91,15 +95,19 @@ def register_unplanned_events(request, events):
     # Only get the last revision of never published and unplanned pages
     queryset = (
         PageRevision.objects
-            .filter(page__first_published_at__isnull=True)
-            .order_by('page', '-created_at')
-            .distinct('page')
+        .filter(page__first_published_at__isnull=True)
+        .order_by('page', '-created_at')
+        # .distinct('page')  # Doesn't work with sqlite
     )
     pages = []
+    ids = set()
     for page in queryset:
         page = page.as_page_object()
         if page.go_live_at is not None:
             continue
+        if page.pk in ids:
+            continue  # Avoid duplicated event
+        ids.add(page.pk)
         pages.append({
             'id': page.pk,
             'title': page.title,

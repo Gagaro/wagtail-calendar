@@ -3,6 +3,12 @@ wagtail-calendar
 
 A planning calendar for wagtail
 
+.. image:: https://travis-ci.org/Gagaro/wagtail-calendar.svg?branch=master
+    :target: https://travis-ci.org/Gagaro/wagtail-calendar
+
+.. image:: https://coveralls.io/repos/github/Gagaro/wagtail-calendar/badge.svg?branch=master
+    :target: https://coveralls.io/github/Gagaro/wagtail-calendar?branch=master
+
 
 THIS IS STILL A WORK IN PROGRESS
 

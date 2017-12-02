@@ -1,0 +1,31 @@
+language: python
+
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+
+env:
+  matrix:
+  - DJANGO_VERSION=1.11.7 WAGTAIL_VERSION=1.13.1
+  - DJANGO_VERSION=1.11.7 WAGTAIL_VERSION=1.12.3
+  - DJANGO_VERSION=1.11.7 WAGTAIL_VERSION=1.11.1
+
+install:
+ - pip install -q Django==$DJANGO_VERSION wagtail==$WAGTAIL_VERSION
+
+ - pip install coverage
+ - pip install flake8
+
+
+before_script:
+ - flake8 --ignore=E501 wagtail_calendar
+
+script:
+ - python runtests.py
+
+after_success:
+ - coverage run quicktest.py leaflet --db=$DATABASE
+ - pip install coveralls
+ - coveralls
