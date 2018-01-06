@@ -7,13 +7,17 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
-_json_tag_escapes = {
-    ord('>'): '\\u003E',
-    ord('<'): '\\u003C',
-    ord('&'): '\\u0026',
+JSON_TAG_ESCAPES = {
+    '>': '\\u003E',
+    '<': '\\u003C',
+    '&': '\\u0026',
+    '"': '&quot;',
 }
 
 
 @register.filter(name='json', is_safe=True)
 def json_filter(value):
-    return mark_safe(json.dumps(value, cls=DjangoJSONEncoder).translate(_json_tag_escapes).replace('"', '&quot;'))
+    text = json.dumps(value, cls=DjangoJSONEncoder)
+    for char, to in JSON_TAG_ESCAPES.items():
+        text.replace(char, to)
+    return mark_safe(text)
