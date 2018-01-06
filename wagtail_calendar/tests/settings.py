@@ -1,5 +1,7 @@
 SECRET_KEY = 'secret'
 
+ROOT_URLCONF = 'wagtail_calendar.tests.urls'
+
 DEBUG = True
 
 DATABASES = {
@@ -35,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.staticfiles',
 )
 
 TEMPLATES = [
@@ -52,3 +55,7 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
