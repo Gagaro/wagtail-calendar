@@ -29,6 +29,6 @@ script:
  - python runtests.py
 
 after_success:
- - coverage run quicktest.py leaflet --db=$DATABASE
+ - coverage run runtests.py
  - pip install coveralls
  - coveralls
