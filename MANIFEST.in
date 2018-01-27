@@ -1,0 +1,4 @@
+include *.rst
+include LICENSE AUTHORS CHANGES
+recursive-include wagtail_calendar/templates *.html
+recursive-include wagtail_calendar/static *.css *.js *.jpg *.jpeg *.png
