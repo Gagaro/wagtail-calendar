@@ -9,23 +9,8 @@ A planning calendar for wagtail
 .. image:: https://coveralls.io/repos/github/Gagaro/wagtail-calendar/badge.svg?branch=master
     :target: https://coveralls.io/github/Gagaro/wagtail-calendar?branch=master
 
-
-THIS IS STILL A WORK IN PROGRESS
-
 TODO
 ----
-
-- [X] Display published pages
-- [X] Display planned pages
-- [X] Use hook to get the events
-- [X] Add popup on click/hover
-- [X] Move planned pages to change the planning
-- [X] Move unplanned pages from the side of the calendar to plan them
-- [X] Move planned pages to the side of the calendar to unplan them
-- [X] Check permissions in wagtail_calendar_register_events hooks
-- [X] Add unit tests
-- [ ] Docs
-- [ ] Release!
 
 - [ ] #3
 

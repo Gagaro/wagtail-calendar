@@ -1,0 +1,145 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Customize &#8212; Wagtail Calendar 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="customize">
+<h1>Customize<a class="headerlink" href="#customize" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="changing-the-event-data">
+<h2>Changing the event data<a class="headerlink" href="#changing-the-event-data" title="Permalink to this headline">¶</a></h2>
+<p>You can add a <cite>get_page_event_data</cite> method to your page model to change the data used by the calendar.
+The default data are:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="p">{</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;page&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;pk&#39;</span><span class="p">:</span> <span class="n">page</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+    <span class="s1">&#39;author&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">owner</span><span class="p">),</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="n">page</span><span class="o">.</span><span class="n">search_description</span><span class="p">,</span>  <span class="c1"># description can be HTML to allow more customization of the popup</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-events">
+<h2>Adding events<a class="headerlink" href="#adding-events" title="Permalink to this headline">¶</a></h2>
+<p>There are two wagtail hooks available to add events. <cite>wagtail_calendar_register_events</cite> is used to add events to the calendar.
+The properties of the events are the one from <a class="reference external" href="https://fullcalendar.io/docs/event_data/Event_Object/">fullcalendar</a>.
+The hook take the request, a start date, a end date and a list of events already in the calendar.
+You must return the whole list of events which will appear in the calendar.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@hooks.register</span><span class="p">(</span><span class="s1">&#39;wagtail_calendar_register_events&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_events</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">parse_datetime</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">parse_datetime</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+    <span class="n">my_events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">MyEvent</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">start__gte</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end__lte</span><span class="o">=</span><span class="n">end</span><span class="p">):</span>
+        <span class="n">my_events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">(),</span>
+            <span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+            <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="k">return</span> <span class="n">events</span> <span class="o">+</span> <span class="n">my_events</span>
+</pre></div>
+</div>
+<p><cite>wagtail_calendar_register_side_events</cite> is used to add events to the sidebar of the calendar. It is used for events which are not planned yet.
+The properties of the events are the one from <a class="reference external" href="https://fullcalendar.io/docs/event_data/Event_Object/">fullcalendar</a>.
+The hook take the request and a list of events already in the sidebar.
+You must return the whole list of events which will appear in the sidebar.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@hooks.register</span><span class="p">(</span><span class="s1">&#39;wagtail_calendar_register_side_events&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_events</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+    <span class="n">my_events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">MyEvent</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">start__isnull</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">my_events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">(),</span>
+            <span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span>
+        <span class="p">})</span>
+    <span class="k">return</span> <span class="n">events</span> <span class="o">+</span> <span class="n">my_events</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Gagaro.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/customize.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

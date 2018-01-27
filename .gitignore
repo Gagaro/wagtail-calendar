@@ -7,3 +7,4 @@ db.sqlite3
 /gagawag/media
 /gagawag/static
 /gagawag/gagawag/settings/local.py
+_dist
