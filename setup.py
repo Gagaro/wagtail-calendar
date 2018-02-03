@@ -18,5 +18,6 @@ setup(
     packages=['wagtail_calendar'],
     install_requires=[
     ],
-    zip_safe=False
+    zip_safe=False,
+    include_package_data=True,
 )
