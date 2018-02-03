@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def readme():
@@ -15,7 +15,7 @@ setup(
     author='Gagaro',
     author_email='gagaro42@gmail.com',
     license='BSD3',
-    packages=['wagtail_calendar'],
+    packages=find_packages(),
     install_requires=[
     ],
     zip_safe=False,
