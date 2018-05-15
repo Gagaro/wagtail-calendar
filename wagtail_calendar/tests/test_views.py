@@ -2,7 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from wagtail.tests.utils import WagtailTestUtils
-from wagtail.wagtailcore.models import Page
+
+try:
+    from wagtail.core.models import Page
+except ImportError:
+    from wagtail.wagtailcore.models import Page
 
 from wagtail_calendar.tests.utils import TestEventsMixin
 

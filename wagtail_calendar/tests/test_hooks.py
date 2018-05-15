@@ -2,7 +2,10 @@ from datetime import timedelta
 
 from django.test import TestCase
 from django.utils import timezone
-from wagtail.wagtailcore.hooks import get_hooks
+try:
+    from wagtail.core.hooks import get_hooks
+except:
+    from wagtail.wagtailcore.hooks import get_hooks
 
 from wagtail_calendar.tests.utils import TestEventsMixin
 

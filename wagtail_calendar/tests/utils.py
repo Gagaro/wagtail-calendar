@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
 from django.test import RequestFactory
 from django.utils import timezone
-from wagtail.wagtailcore.models import Page
+try:
+    from wagtail.core.models import Page
+except ImportError:
+    from wagtail.wagtailcore.models import Page
 
 
 class TestEventsMixin(object):
