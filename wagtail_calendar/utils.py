@@ -11,4 +11,5 @@ def get_page_event_data(page):
         'pk': page.pk,
         'author': str(page.owner),
         'description': page.search_description,  # description can be HTML to allow more customization of the popup
+        'status': page.status_string,
     }

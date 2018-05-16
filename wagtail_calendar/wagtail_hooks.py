@@ -76,6 +76,12 @@ def register_planned_events(request, start, end, events):
             continue
         if page.pk in ids:
             continue  # Avoid duplicated event
+        # Determine event color
+        color = '#e9b04d'
+        if page.expired:
+            color = '#f37e77'
+        elif page.approved_schedule:
+            color = '#358c8b'
         ids.add(page.pk)
         pages.append({
             'id': page.pk,
@@ -83,7 +89,7 @@ def register_planned_events(request, start, end, events):
             'start': page.go_live_at.isoformat(),
             'url': page.get_url(request),
             'editable': permissions.for_page(page).can_publish(),
-            'color': '#e9b04d',
+            'color': color,
             'data': get_page_event_data(page),
         })
     return events + pages

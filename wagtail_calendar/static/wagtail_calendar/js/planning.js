@@ -77,7 +77,7 @@ $(document).ready(function() {
   var eventClick = function(event, jsEvent, view) {
       var $event = $(this);
       var $titleLink = $('<a>', {text: event.title, href: event.url});
-      $popup.find('#event-title').html('').append($titleLink);
+      $popup.find('#event-title').html('<i>(' + event.data.status + ')</i> ').append($titleLink);
       $popup.find('#event-author').text(event.data.author);
       $popup.find('#event-description').html(event.data.description);
       $popup.show();
