@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name='wagtail-calendar',
-    version='1.0.2',
+    version='1.0.3',
     description='A planning calendar for wagtail',
     long_description=readme(),
     url='https://github.com/Gagaro/wagtail-calendar',
