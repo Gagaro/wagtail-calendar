@@ -3,10 +3,15 @@ from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views.generic.edit import BaseUpdateView
-from wagtail.wagtailadmin.edit_handlers import get_form_for_model
-from wagtail.wagtailcore.hooks import get_hooks
-from wagtail.wagtailcore.models import Page
 
+try:
+    from wagtail.admin.edit_handlers import get_form_for_model
+    from wagtail.core.hooks import get_hooks
+    from wagtail.core.models import Page
+except ImportError:
+    from wagtail.wagtailadmin.edit_handlers import get_form_for_model
+    from wagtail.wagtailcore.hooks import get_hooks
+    from wagtail.wagtailcore.models import Page
 
 class PlanningCalendarView(TemplateView):
     template_name = 'wagtail_calendar/planning_calendar.html'

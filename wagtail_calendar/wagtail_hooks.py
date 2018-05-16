@@ -1,10 +1,17 @@
 from django.conf.urls import url, include
+from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import ugettext_lazy as _
-from wagtail.wagtailadmin.menu import MenuItem
-from wagtail.wagtailcore import hooks
-from wagtail.wagtailcore.models import Page, PageRevision, UserPagePermissionsProxy
+
+try:
+    from wagtail.admin.menu import MenuItem
+    from wagtail.core import hooks
+    from wagtail.core.models import Page, PageRevision, UserPagePermissionsProxy
+except:
+    from wagtail.wagtailadmin.menu import MenuItem
+    from wagtail.wagtailcore import hooks
+    from wagtail.wagtailcore.models import Page, PageRevision, UserPagePermissionsProxy
 
 from wagtail_calendar import urls
 from wagtail_calendar.utils import get_page_event_data
@@ -12,10 +19,14 @@ from wagtail_calendar.utils import get_page_event_data
 
 @hooks.register('register_admin_urls')
 def register_admin_urls():
-    return [
-        url(r'^calendar/', include(urls, namespace='wagtail_calendar')),
-    ]
-
+    try:
+        return [
+            url(r'^calendar/', include(urls, namespace='wagtail_calendar')),
+        ]
+    except ImproperlyConfigured:
+        return [
+            url(r'^calendar/', include((urls,'wagtail_calendar'), namespace='wagtail_calendar')),
+        ]
 
 @hooks.register('register_admin_menu_item')
 def register_styleguide_menu_item():
